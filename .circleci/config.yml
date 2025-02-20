@@ -1,0 +1,42 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:17-jdk  # Use OpenJDK 17 for building the Java app
+    steps:
+      - checkout  # Checkout the code from GitHub
+      - run:
+          name: Build with Maven
+          command: mvn clean package  # This will build and package your app into a .jar file
+
+  deploy:
+    docker:
+      - image: circleci/openjdk:17-jdk  # Reuse OpenJDK 17 image for deployment consistency
+    steps:
+      - checkout  # Checkout the repo again
+      - run:
+          name: Install Azure CLI
+          command: |
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash  # Install Azure CLI
+      - run:
+          name: Log in to Azure
+          command: |
+            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID  # Log into Azure using the Service Principal credentials
+      - run:
+          name: Deploy to Azure App Service
+          command: |
+            az webapp deploy --resource-group eshwar --name middle-ware --src-path target/*.jar  # Deploy the .jar file to Azure App Service
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build  # Ensure deploy runs after build job completes successfully
+          filters:
+            branches:
+              only:
+                - main  # Trigger the workflow only for the 'main' branch
