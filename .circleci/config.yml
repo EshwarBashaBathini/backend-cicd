@@ -1,48 +1,38 @@
 version: 2.1
 
-orbs:
-  azure-cli: circleci/azure-cli@0.1.0
+executors:
+  java-executor:
+    docker:
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy
+    executor: java-executor
     steps:
       - checkout
       - run:
-          name: Install Azure CLI
+          name: Compile and Test
           command: |
-            sudo apt-get update
-            sudo apt-get install -y curl
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
+            ./gradlew build
   deploy:
-    docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy
+    executor: java-executor
     steps:
       - checkout
-      - azure-cli/install
       - run:
-          name: Log in to Azure
+          name: Login to Azure
           command: |
+        
             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
       - run:
-          name: Deploy to Azure App Service (Windows)
+          name: Deploy to Azure App Service
           command: |
-            # Replace <resource-group-name> and <app-service-name> with your actual resource group and app service names
-            az webapp deploy --resource-group eshwar --name middleware-talents --src-path target/ems-backend-0.0.1-SNAPSHOT.jar
-            az webapp ssh --resource-group eshwar --name middleware-talents --command "java -jar target/ems-backend-0.0.1-SNAPSHOT.jar"
+            az webapp deploy --resource-group eshwar --name middleware-talents --src-path build/libs/your-app.jar
 
 workflows:
   version: 2
-  build-and-deploy:
+  build-deploy:
     jobs:
       - build
       - deploy:
           requires:
             - build
-          filters:
-            branches:
-              only:
-                - main
-
