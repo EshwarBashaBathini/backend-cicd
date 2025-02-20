@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name middleware-talents--src-path target/ems-backend-0.0.1-SNAPSHOT.jar  --type jar
+            az webapp deploy --resource-group eshwar --name middleware-talents --src-path target/ems-backend-0.0.1-SNAPSHOT.jar  --type jar
 
 workflows:
   version: 2
