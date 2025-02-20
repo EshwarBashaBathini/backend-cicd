@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group <resource-group-name> --name <app-service-name> --src-path target/<your-app>.war
+            az webapp deploy --resource-group eshwar --name middle-ware --src-path target/*.jar
 
 workflows:
   version: 2
