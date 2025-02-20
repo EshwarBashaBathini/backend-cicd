@@ -1,12 +1,12 @@
 version: 2.1
 
 orbs:
-  azure: circleci/azure-cli@1.3.2  # Use the Azure CLI Orb for simplified Azure commands
+  azure: circleci/azure-cli@1.3.2  # Ensure you're using the latest version
 
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy  # Use an OpenJDK-based image for building the JAR
+      - image: circleci/openjdk:17-buster-node-browsers-legacy  # OpenJDK image for building the JAR
     steps:
       - checkout
       - run:
