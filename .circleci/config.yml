@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  azure: circleci/azure-cli@1.3.2  # Ensure you're using the latest version
+  azure-cli: circleci/azure-cli@1.3.2  # Ensure you're using the correct version of the orb
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /workspace  # Attach the workspace to retrieve the JAR file
-      - azure/login:
+      - azure-cli/azure-login:
           client-id: $AZURE_CLIENT_ID
           client-secret: $AZURE_CLIENT_SECRET
           tenant-id: $AZURE_TENANT_ID
