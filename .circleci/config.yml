@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Compile and Test
           command: |
-            ./gradlew build
+            ./gradle build
   deploy:
     executor: java-executor
     steps:
