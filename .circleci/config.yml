@@ -1,43 +1,40 @@
 version: 2.1
 
-orbs:
-  azure-cli: circleci/azure-cli@1.3.2  # Ensure you're using the correct version of the orb
-
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy  # OpenJDK image for building the JAR
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
       - checkout
       - run:
-          name: Build Java backend with Maven
-          command: mvn clean package  # This will create the JAR file in target/
-      - persist_to_workspace:
-          root: ./target  # Save the JAR file for deployment
-          paths:
-            - .
+          name: Build with Maven
+          command: mvn clean package  # This will produce a JAR file in target/
 
   deploy:
     docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy  # Use the same image as the build job
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
-      - attach_workspace:
-          at: /workspace  # Attach the workspace to retrieve the JAR file
-      - azure-cli/azure-login:
-          client-id: $AZURE_CLIENT_ID
-          client-secret: $AZURE_CLIENT_SECRET
-          tenant-id: $AZURE_TENANT_ID
+      - checkout
       - run:
-          name: Deploy to Azure App Service
+          name: Install Azure CLI
           command: |
-            az webapp deploy --resource-group eshwar \
-                              --name middleware-talents \
-                              --src-path /workspace/ems-backend-0.0.1-SNAPSHOT.jar \
-                              --type jar
+            sudo apt-get update
+            sudo apt-get install -y curl
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - run:
+          name: Log in to Azure
+          command: |
+            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+      - run:
+          name: Deploy to Azure App Service (Windows)
+          command: |
+            # Replace <resource-group-name> and <app-service-name> with your actual resource group and app service names
+            az webapp deploy --resource-group eshwar --name middleware-talents --src-path target/ems-backend-0.0.1-SNAPSHOT.jar
+            az webapp ssh --resource-group eshwar --name middleware-talents --command "java -jar target/ems-backend-0.0.1-SNAPSHOT.jar"
 
 workflows:
   version: 2
-  build_and_deploy:
+  build-and-deploy:
     jobs:
       - build
       - deploy:
