@@ -8,41 +8,30 @@ jobs:
       - checkout
       - run:
           name: Build with Maven
-          command: mvn clean package  # This will produce a JAR file in target/
+          command: mvn clean package
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/*.jar
 
   deploy:
     docker:
       - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Install Azure CLI
           command: |
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-      - run:
-          name: Add Google Chrome GPG Key
-          command: |
-            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-archive-keyring.gpg
-      - run:
-          name: Configure Google Chrome repository
-          command: |
-            echo "deb [signed-by=/usr/share/keyrings/google-archive-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-      - run:
-          name: Update apt sources
-          command: |
-            sudo apt-get update
+            curl -sL https://aka.ms/InstallAzureCLIDeb | bash
       - run:
           name: Log in to Azure
           command: |
             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
       - run:
-          name: Deploy to Azure App Service (Linux)
+          name: Deploy to Azure App Service
           command: |
-            # Replace <resource-group-name> and <app-service-name> with your actual resource group and app service names
-            # Ensure the JAR file is correctly located (target/<your-app>.jar)
-            az webapp deploy --resource-group <resource-group-name> --name <app-service-name> --src-path target/<your-app>.jar
-            # Once deployed, start the JAR file using the 'java -jar' command:
-            az webapp ssh --resource-group eshwar --name middle-ware --src-path target/ems-backend-0.0.1-SNAPSHOT.jar  --type jar
+            az webapp deploy --resource-group eshwar --name middleware-talents--src-path target/ems-backend-0.0.1-SNAPSHOT.jar  --type jar
 
 workflows:
   version: 2
