@@ -9,15 +9,16 @@ jobs:
       - run:
           name: Install missing GPG key for Google Chrome
           command: |
-            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-archive-keyring.gpg
+            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-archive-keyring.gpg
       - run:
           name: Fix Google Chrome repository
           command: |
-            echo "deb [signed-by=/usr/share/keyrings/google-archive-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+            echo "deb [signed-by=/usr/share/keyrings/google-archive-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
       - run:
           name: Update and install Chrome
           command: |
-            apt-get update && apt-get install -y google-chrome-stable
+            sudo sed -i 's/oldstable/oldoldstable/g' /etc/apt/sources.list
+            sudo apt-get update && sudo apt-get install -y google-chrome-stable
       - run:
           name: Build with Maven
           command: mvn clean package
