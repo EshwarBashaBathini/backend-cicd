@@ -10,8 +10,8 @@ jobs:
           name: Resolve GPG Key Issue for Google Chrome Repository
           command: |
             sudo apt-get update
-            sudo apt-get install -y wget
-            wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo apt-get install -y wget gnupg
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
             echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
             sudo apt-get update
       - run:
@@ -49,4 +49,4 @@ workflows:
           filters:
             branches:
               only:
-                - main  # Trigger the workflow only for the 'main' branch the workflow only for the 'main' branch
+                - main  # Trigger the workflow only for the 'main' branch
