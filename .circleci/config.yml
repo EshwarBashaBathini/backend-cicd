@@ -13,20 +13,26 @@ jobs:
       - run:
           name: Compile and Test
           command: |
-            ./gradle build
+            ./gradlew build  # Use ./gradlew instead of ./gradle
+
   deploy:
     executor: java-executor
     steps:
       - checkout
       - run:
+          name: Install Azure CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y curl
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - run:
           name: Login to Azure
           command: |
-        
             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name middleware-talents --src-path build/libs/your-app.jar
+            az webapp deploy --resource-group ed --name middleware-talents --src-path target/ems-backend-0.0.1-SNAPSHOT.jar
 
 workflows:
   version: 2
