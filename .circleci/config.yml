@@ -50,3 +50,4 @@ workflows:
             branches:
               only:
                 - main  # Trigger the workflow only for the 'main' branch
+
