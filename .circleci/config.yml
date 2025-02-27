@@ -41,6 +41,7 @@ jobs:
           name: Deploy to Azure App Service
           command: |
             az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
+            echo "Deployment successful"
 
 workflows:
   version: 2
