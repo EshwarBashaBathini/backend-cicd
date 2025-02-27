@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group ed --name middleware-talents --src-path target/*.jar  # Deploy the .jar file to Azure App Service
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar  # Deploy the .jar file to Azure App Service
 
 workflows:
   version: 2
