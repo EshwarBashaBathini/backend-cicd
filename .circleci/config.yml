@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout  # Checkout the code from GitHub
       - run:
+          name: Add Google Chrome Public Key
+          command: |
+            curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      - run:
           name: Resolve GPG Key Issue for Google Chrome Repository
           command: |
             sudo apt-get update
@@ -50,4 +54,3 @@ workflows:
             branches:
               only:
                 - main  # Trigger the workflow only for the 'main' branch
-
