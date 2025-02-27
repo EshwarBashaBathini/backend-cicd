@@ -28,6 +28,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Add Google Chrome Public Key
+          command: |
+            curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
+      - run:
+          name: Resolve GPG Key Issue for Google Chrome Repository
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y wget gnupg
+            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+            sudo apt-get update
+      - run:
           name: Install Azure CLI
           command: |
             sudo apt-get update
