@@ -3,44 +3,45 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy  # Use OpenJDK 17 for building the Java app
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
-      - checkout  # Checkout the code from GitHub
+      - checkout
       - run:
           name: Add Google Chrome Public Key
           command: |
             curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
       - run:
           name: Resolve GPG Key Issue for Google Chrome Repository
           command: |
             sudo apt-get update
             sudo apt-get install -y wget gnupg
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
             echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
             sudo apt-get update
       - run:
           name: Build with Maven
-          command: mvn clean package  # This will build and package your app into a .jar file
+          command: mvn clean package
 
   deploy:
     docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy  # Reuse OpenJDK 17 image for deployment consistency
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
-      - checkout  # Checkout the repo again
+      - checkout
       - run:
           name: Install Azure CLI
           command: |
             sudo apt-get update
             sudo apt-get install -y curl
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash  # Install Azure CLI
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       - run:
           name: Log in to Azure
           command: |
-            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID  # Log into Azure using the Service Principal credentials
+            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar  # Deploy the .jar file to Azure App Service
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
+            echo "Deployment successful"
 
 workflows:
   version: 2
@@ -49,8 +50,8 @@ workflows:
       - build
       - deploy:
           requires:
-            - build  # Ensure deploy runs after build job completes successfully
+            - build
           filters:
             branches:
               only:
-                - main  # Trigger the workflow only for the 'main' branch
+                - main
