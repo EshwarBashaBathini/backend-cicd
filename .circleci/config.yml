@@ -24,15 +24,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Update and Install GPG
+          name: Install curl and gnupg
           command: |
-            sudo apt-get update && sudo apt-get install -y gnupg2 curl lsb-release
+            apt-get update && apt-get install -y gnupg2 curl lsb-release
       - run:
           name: Add Missing GPG Key for Debian Repositories
           command: |
-            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc
-            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            sudo apt-get update
+            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc
+            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+            apt-get update
       - azure-cli/install
       - run:
           name: Log in to Azure with Service Principal
