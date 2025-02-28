@@ -1,56 +1,37 @@
-version: 2.1
-
-jobs:
-  build:
-    docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy
-    steps:
-      - checkout
-      - run:
-          name: Build with Maven
-          command: mvn clean package
-
-  deploy:
-    docker:
-      - image: circleci/openjdk:17-buster-node-browsers-legacy
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies and Google Chrome Public Key
-          command: |
-            sudo apt-get update && sudo apt-get install -y curl wget gnupg
-            curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc
-            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            sudo apt-get update
-      - run:
-          name: Install Azure CLI
-          command: |
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-            az upgrade --yes
-      - run:
-          name: Debug Environment Variables
-          command: |
-            echo "AZURE_CLIENT_ID: $AZURE_CLIENT_ID"
-            echo "AZURE_CLIENT_SECRET: $AZURE_CLIENT_SECRET"
-            echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
-      - run:
-          name: Log in to Azure
-          command: |
-            az login --service-principal -u $AZURE_CLIENT_ID -p "$AZURE_CLIENT_SECRET" --tenant $AZURE_TENANT_ID --debug
-      - run:
-          name: Deploy to Azure App Service
-          command: |
-            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
-            echo "Deployment successful"
-
-workflows:
-  build-and-deploy:
-    jobs:
-      - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - main
+deploy:
+  docker:
+    - image: circleci/openjdk:17-buster-node-browsers-legacy
+  steps:
+    - checkout
+    - run:
+        name: Install Dependencies and Google Chrome Public Key
+        command: |
+          sudo apt-get update && sudo apt-get install -y curl wget gnupg
+          curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+    - run:
+        name: Update System Packages
+        command: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+    - run:
+        name: Install Azure CLI
+        command: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+          az upgrade --yes --debug
+    - run:
+        name: Debug Environment Variables
+        command: |
+          echo "AZURE_CLIENT_ID: $AZURE_CLIENT_ID"
+          echo "AZURE_CLIENT_SECRET: $AZURE_CLIENT_SECRET"
+          echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
+    - run:
+        name: Log in to Azure
+        command: |
+          az login --service-principal -u $AZURE_CLIENT_ID -p "$AZURE_CLIENT_SECRET" --tenant $AZURE_TENANT_ID --debug
+    - run:
+        name: Deploy to Azure App Service
+        command: |
+          az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
+          echo "Deployment successful"
