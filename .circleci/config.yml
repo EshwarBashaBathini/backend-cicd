@@ -19,25 +19,14 @@ jobs:
           name: Install Dependencies and Google Chrome Public Key
           command: |
             sudo apt-get update && sudo apt-get install -y curl wget gnupg
-            
-            # Add the Google Chrome public key to resolve the missing key error
             curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc
-            
-            # Add the Google Chrome repository to the apt sources list
             echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            
-            # Ensure all necessary repositories have their keys properly set
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
-            
-            # Update the apt package index after adding new keys and repositories
             sudo apt-get update
-            
       - run:
           name: Update System Packages
           command: |
             sudo apt-get update
             sudo apt-get upgrade -y
-
       - run:
           name: Install Azure CLI
           command: |
@@ -48,6 +37,7 @@ jobs:
           command: |
             # Replace these values with your actual Azure credentials
             export CLIENTID="f1db75c3-09cc-474c-a124-052bcb6cfc06"
+         
             export TENANTID="118b2919-e434-405b-9f3c-3a829eba55f9"
 
       - run:
