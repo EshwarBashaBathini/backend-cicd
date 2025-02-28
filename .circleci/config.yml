@@ -24,9 +24,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Update and Install GPG
+          command: |
+            apt-get update && apt-get install -y gnupg
+      - run:
           name: Add Missing GPG Key for Debian Repositories
           command: |
-            apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
+            gpg --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
+            gpg --export --armor 32EE5355A6BC6E42 | apt-key add -
       - azure-cli/install
       - run:
           name: Log in to Azure with Service Principal
