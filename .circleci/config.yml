@@ -4,10 +4,6 @@ executors:
     docker:
       - image: mcr.microsoft.com/azure-cli:latest
     working_directory: ~/project
-    environment:
-      AZURE_SP: your_sp_id
-      AZURE_SP_PASSWORD: your_sp_password
-      AZURE_SP_TENANT: your_sp_tenant
 jobs:
   azure-login:
     executor: azure-executor
@@ -22,3 +18,9 @@ workflows:
   login_and_execute:
     jobs:
       - azure-login
+contexts:
+  azure-context:
+    environment:
+      AZURE_SP: your_sp_id
+      AZURE_SP_PASSWORD: your_sp_password
+      AZURE_SP_TENANT: your_sp_tenant
