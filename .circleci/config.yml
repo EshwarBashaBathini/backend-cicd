@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     docker:
-       - image: circleci/openjdk:17-buster-node-browsers-legacy
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
       - checkout
       - run:
@@ -15,9 +15,13 @@ jobs:
 
   deploy:
     docker:
-       - image: circleci/openjdk:17-buster-node-browsers-legacy
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
     steps:
       - checkout
+      - run:
+          name: Add Missing GPG Key for Debian Repositories
+          command: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
       - azure-cli/install
       - azure-cli/login-with-service-principal
       - run:
