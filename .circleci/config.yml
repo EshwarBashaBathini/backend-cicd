@@ -20,7 +20,7 @@ jobs:
           command: mvn clean install
       - run:
           name: List files in target directory
-          command: ls -l /home/circleci/project/target
+          command: ls -l /home/circleci/eshwar-circleci/target
       - store_artifacts:
           path: target/ems-backend-0.0.1-SNAPSHOT.jar
           destination: ems-backend-0.0.1-SNAPSHOT.jar    
