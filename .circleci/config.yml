@@ -27,11 +27,8 @@ jobs:
           command: |
             curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       - run:
-          name: Debug Environment Variables
-          command: |
-            echo "AZURE_CLIENT_ID: $AZURE_CLIENT_ID"
-            echo "AZURE_CLIENT_SECRET: $AZURE_CLIENT_SECRET"
-            echo "AZURE_TENANT_ID: $AZURE_TENANT_ID"
+          name: Upgrade Azure CLI
+          command: az upgrade
       - run:
           name: Log in to Azure
           command: |
