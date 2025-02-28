@@ -3,7 +3,7 @@ version: 2.1
 executors:
   azure-executor:
     docker:
-      - image: ubuntu:20.04  # Use an Ubuntu image with apt-get
+      - image: ubuntu:20.04
     working_directory: ~/project
 
 orbs:
@@ -20,7 +20,7 @@ jobs:
           command: mvn clean install
       - run:
           name: List files in target directory
-          command: ls -l /home/circleci/project/target
+          command: ls -l target
       - store_artifacts:
           path: target/ems-backend-0.0.1-SNAPSHOT.jar
           destination: ems-backend-0.0.1-SNAPSHOT.jar    
