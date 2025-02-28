@@ -3,7 +3,7 @@ version: 2.1
 executors:
   azure-executor:
     docker:
-      - image: mcr.microsoft.com/azure-cli:latest
+      - image: ubuntu:20.04
     working_directory: ~/project
 
 orbs:
@@ -18,20 +18,26 @@ jobs:
       - run:
           name: Build with Maven
           command: mvn clean package
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - target
 
   deploy:
     executor: azure-executor
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/project
       - run:
-          name: Update and Install GPG
+          name: Install curl and gnupg
           command: |
-            apt-get update && apt-get install -y gnupg
+            apt-get update && apt-get install -y gnupg2 curl lsb-release
       - run:
           name: Add Missing GPG Key for Debian Repositories
           command: |
-            gpg --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
-            gpg --export --armor 32EE5355A6BC6E42 | apt-key add -
+            curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | tee /etc/apt/trusted.gpg.d/google.asc
+            echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+            apt-get update
       - azure-cli/install
       - run:
           name: Log in to Azure with Service Principal
@@ -40,7 +46,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
             echo "Deployment successful"
 
 workflows:
