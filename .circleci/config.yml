@@ -18,6 +18,12 @@ jobs:
       - run:
           name: Build with Maven
           command: mvn clean install
+      - run:
+          name: List files in target directory
+          command: ls -l /home/circleci/project/target
+      - store_artifacts:
+          path: target/ems-backend-0.0.1-SNAPSHOT.jar
+          destination: ems-backend-0.0.1-SNAPSHOT.jar    
 
   deploy:
     executor: azure-executor
@@ -41,13 +47,8 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            if [ -f "/home/circleci/project/target/ems-backend-0.0.1-SNAPSHOT.jar" ]; then
-              az webapp deploy --resource-group eshwar --name eshwar-backend --src-path /home/circleci/project/target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
-              echo "Deployment successful"
-            else
-              echo "File not found or no permissions"
-              exit 1
-            fi
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
+            echo "Deployment successful"
 
 workflows:
   build-and-deploy:
