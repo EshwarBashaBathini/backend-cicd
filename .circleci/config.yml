@@ -1,23 +1,55 @@
 version: 2.1
+
 executors:
   azure-executor:
     docker:
       - image: mcr.microsoft.com/azure-cli:latest
     working_directory: ~/project
+
+orbs:
+  azure-cli: circleci/azure-cli@1.3.2
+
 jobs:
-  azure-login:
+  build:
+    docker:
+      - image: circleci/openjdk:17-buster-node-browsers-legacy
+    steps:
+      - checkout
+      - run:
+          name: Build with Maven
+          command: mvn clean package
+
+  deploy:
     executor: azure-executor
     steps:
       - checkout
       - run:
-          name: Login with Azure CLI
+          name: Add Missing GPG Key for Debian Repositories
+          command: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32EE5355A6BC6E42
+      - azure-cli/install
+      - run:
+          name: Log in to Azure with Service Principal
           command: |
             az login --service-principal -u $AZURE_SP -p $AZURE_SP_PASSWORD --tenant $AZURE_SP_TENANT
+      - run:
+          name: Deploy to Azure App Service
+          command: |
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/*.jar
+            echo "Deployment successful"
+
 workflows:
-  version: 2
-  login_and_execute:
+  build-and-deploy:
     jobs:
-      - azure-login
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - main
+
 contexts:
   azure-context:
     environment:
