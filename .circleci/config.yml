@@ -3,7 +3,7 @@ version: 2.1
 executors:
   azure-executor:
     docker:
-      - image: mcr.microsoft.com/azure-cli:latest
+      - image: ubuntu:20.04  # Use an Ubuntu image with apt-get
     working_directory: ~/project
 
 orbs:
