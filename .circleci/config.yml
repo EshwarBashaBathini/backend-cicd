@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path /home/circleci/project/target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path home/circleci/.m2/repository/com/accesshr/ems-backend/0.0.1-SNAPSHOT/ems-backend-0.0.1-SNAPSHOT.jar --type zip
             echo "Deployment successful"
 
 workflows:
