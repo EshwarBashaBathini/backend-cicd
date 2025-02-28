@@ -36,14 +36,14 @@ jobs:
           name: Export Azure Environment Variables
           command: |
             # Replace these values with your actual Azure credentials
-            export CLIENTID="f1db75c3-09cc-474c-a124-052bcb6cfc06"
+            export CLIENT_ID="f1db75c3-09cc-474c-a124-052bcb6cfc06"
          
-            export TENANTID="118b2919-e434-405b-9f3c-3a829eba55f9"
+            export TENANT_ID="118b2919-e434-405b-9f3c-3a829eba55f9"
 
       - run:
           name: Log in to Azure
           command: |
-            az login --service-principal -u $CLIENTID -p $AZURE_CLIENT_SECRET --tenant $TENANTID --debug
+            az login --service-principal -u $CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $TENANT_ID --debug
 
       - run:
           name: Deploy to Azure App Service
