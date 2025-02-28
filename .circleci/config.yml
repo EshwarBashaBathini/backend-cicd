@@ -19,6 +19,16 @@ jobs:
           name: Build with Maven
           command: mvn clean install
       - run:
+          name: Check if the JAR file exists
+          command: |
+            ls -l target
+            if [ -f target/ems-backend-0.0.1-SNAPSHOT.jar ]; then
+              echo "JAR file exists"
+            else
+              echo "JAR file does not exist"
+              exit 1
+            fi    
+      - run:
           name: List files in target directory
           command: ls -l target
       - persist_to_workspace:
