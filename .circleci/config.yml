@@ -21,9 +21,10 @@ jobs:
       - run:
           name: List files in target directory
           command: ls -l target
-      - store_artifacts:
-          path: target/ems-backend-0.0.1-SNAPSHOT.jar
-          destination: ems-backend-0.0.1-SNAPSHOT.jar    
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/ems-backend-0.0.1-SNAPSHOT.jar   
 
   deploy:
     executor: azure-executor
@@ -47,8 +48,8 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            if [ -f target/ems-backend-0.0.1-SNAPSHOT.jar ]; then
-              az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
+            if [ -f /workspace/target/ems-backend-0.0.1-SNAPSHOT.jar ]; then
+              az webapp deploy --resource-group eshwar --name eshwar-backend --src-path /workspace/target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
               echo "Deployment successful"
             else
               echo "File not found in target directory"
