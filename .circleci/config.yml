@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Deploy to Azure App Service
           command: |
-            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path target/ems-backend-0.0.1-SNAPSHOT.jar --type zip
+            az webapp deploy --resource-group eshwar --name eshwar-backend --src-path ems-backend-0.0.1-SNAPSHOT.jar --type zip
             echo "Deployment successful"
 
 workflows:
